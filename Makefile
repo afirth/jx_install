@@ -29,32 +29,53 @@ delete:
 .PHONY: create
 create:
 	jx create cluster gke \
+		--git-api-token=$(GIT_TOKEN) \
 		--disk-size=20GB \
-		--no-tiller --tekton --prow \
+		--no-tiller --tekton \
 		--cluster-name=$(cluster_name) \
 		--docker-registry-org=$(service_name) \
 		--domain=$(domain)\
-		--enable-autoupgrade=true \
 		--enhanced-apis=true \
 		--enhanced-scopes=true \
-		--environment-git-owner=camunda-internal \
+		--enable-autoupgrade=true \
 		--external-dns=true \
 		--git-private=true \
+		--git-username=$(git_username) \
 		--long-term-storage=false \
+		--log-level=debug \
 		--machine-type='n1-standard-2' \
 		--max-num-nodes=5 \
 		--min-num-nodes=2 \
 		--preemptible=true \
+		--project-id=$(project_id) \
 		--skip-login=true \
 		--timeout='60' \
 		--zone=$(zone) \
 		--verbose
 
+.PHONY: install
+install:
+	jx install \
+		--provider=gke \
+		--git-api-token=$(GIT_TOKEN) \
+		--no-tiller --tekton \
+		--docker-registry-org=$(service_name) \
+		--domain=$(domain)\
+		--external-dns=true \
+		--git-private=true \
+		--git-username=$(git_username) \
+		--log-level=debug \
+		--long-term-storage=false \
+		--timeout='60' \
+		--verbose
+
+#TODO need org/orgadmin?
+		#--environment-git-owner=camunda-internal \
+
 # unused:
 
-		# --git-username=$(git_username) \
-		# --project-id=$(project_id) \
       # --scope=[] \ The OAuth scopes to be added to the cluster
+		# --no-tiller --tekton --prow \
       # --ingress-class='' \ Used to set the ingress.class annotation in exposecontroller created ingress
       # --long-term-storage=false \ Enable the Long Term Storage option to save logs and other assets into a GCS bucket (supported only for GKE)
       # --lts-bucket='' \ The bucket to use for Long Term Storage. If the bucket doesn't exist, an attempt will be made to create it, otherwise random naming will be used
