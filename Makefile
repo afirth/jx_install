@@ -34,7 +34,7 @@ create:
 		--no-tiller --tekton \
 		--cluster-name=$(cluster_name) \
 		--docker-registry-org=$(service_name) \
-		--domain=$(domain)\
+		--domain=$(domain) \
 		--enhanced-apis=true \
 		--enhanced-scopes=true \
 		--enable-autoupgrade=true \
