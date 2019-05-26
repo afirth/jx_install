@@ -57,10 +57,11 @@ create: validate
 		--zone=$(zone) \
 
 #BUG no-tiller jx/4082
+#BUG namespace jx isn't created
 .PHONY: init
 init: validate
 	JX_NO_TILLER=true \
-	             jx init \
+	jx init \
 		--batch-mode \
 		--install-dependencies \
 		--provider=gke \
@@ -68,9 +69,11 @@ init: validate
 		--log-level=debug \
 		--domain=$(domain) \
 		--verbose
+	kubectl create namespace jx
 
 .PHONY: install
 install: validate
+	JX_NO_TILLER=true \
 	jx install \
 		--batch-mode \
 		--buildpack='kubernetes-workloads' \
@@ -91,6 +94,11 @@ install: validate
 		--timeout='60' \
 		--verbose
 	
+.PHONY: ingress
+ingress: validate
+	JX_NO_TILLER=true \
+	jx upgrade ingress --cluster
+
 unused:
 		--gitops \
 		--vault \
