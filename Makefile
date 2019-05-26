@@ -5,15 +5,15 @@ git_username = afirth
 
 # SERVICE CONFIG
 #TODO
-tld = alfirth.com
-service_name = zeebecloud
+domain = ccdev.alfirth.com
+service_name = cc
 service_level = rabbit
 project_id = camunda-cloud-240911
 zone = europe-west1-d
 
 # Generated config
 cluster_name = $(service_name)-$(service_level)-$(zone)
-domain = $(cluster_name).$(tld)
+#domain = $(cluster_name).$(tld)
 
 # Make config
 .SHELLFLAGS := -eu -o pipefail -c
@@ -29,36 +29,53 @@ delete:
 .PHONY: create
 create:
 	jx create cluster gke \
-		--git-api-token=$(GIT_TOKEN) \
-		--disk-size=20GB \
-		--no-tiller --tekton \
-		--cluster-name=$(cluster_name) \
-		--docker-registry-org=$(service_name) \
-		--domain=$(domain) \
-		--enhanced-apis=true \
-		--enhanced-scopes=true \
-		--enable-autoupgrade=true \
-		--external-dns=true \
-		--git-private=true \
-		--git-username=$(git_username) \
-		--long-term-storage=false \
-		--log-level=debug \
-		--machine-type='n1-standard-2' \
-		--max-num-nodes=5 \
-		--min-num-nodes=2 \
+		--verbose
+		--zone=$(zone) \
 		--preemptible=true \
+		--min-num-nodes=2 \
+		--max-num-nodes=5 \
+		--machine-type='n1-standard-2' \
+		--log-level=debug \
 		--project-id=$(project_id) \
 		--skip-login=true \
-		--timeout='60' \
-		--zone=$(zone) \
+		--enable-autoupgrade=true \
+		--enhanced-scopes=true \
+		--enhanced-apis=true \
+		--cluster-name=$(cluster_name) \
+		--disk-size=20GB \
+
+init:
+	jx init \
+		--batch-mode \
+		--provider=gke \
+		--log-level=debug \
+		--domain=$(domain) \
 		--verbose
+
+		--git-api-token=$(GIT_TOKEN) \
+		\
+		--log-level=debug \
+		--verbose
+		--buildpack='jenkins-x-kubernetes' \
+		--gitops \
+		--prow \
+		--tekton \
+		--docker-registry="gcr.io" \
+		--docker-registry-org=$(project_id) \
+		
+		--ng \
+		--git-private=true \
+		--git-username=$(git_username) \
+		--environment-git-owner=afirth \
+		--long-term-storage=false \
+		--timeout='60' \
 
 .PHONY: install
 install:
 	jx install \
 		--provider=gke \
 		--git-api-token=$(GIT_TOKEN) \
-		--no-tiller --tekton \
+		--tekton \
 		--docker-registry-org=$(service_name) \
 		--domain=$(domain)\
 		--external-dns=true \
@@ -70,7 +87,6 @@ install:
 		--verbose
 
 #TODO need org/orgadmin?
-		#--environment-git-owner=camunda-internal \
 
 # unused:
 
