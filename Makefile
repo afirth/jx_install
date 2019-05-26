@@ -2,8 +2,8 @@
 
 # USER CONFIG
 # MUST EXPORT or set
-git-token ?= ${JX_GIT_TOKEN)
-domain ?= ${JX_DOMAIN}
+git-token ?= $(JX_GIT_TOKEN)
+domain ?= $(JX_DOMAIN)
 
 # SERVICE CONFIG
 service_name := cc
@@ -81,7 +81,7 @@ install: validate
 		--git-api-token=$(git-token) \
 		--git-private=true \
 		--git-username=$(git_username) \
-		--gitops \
+		--install-dependencies \
 		--log-level=debug \
 		--long-term-storage=false \
 		--no-tiller \
@@ -89,5 +89,8 @@ install: validate
 		--prow \
 		--tekton \
 		--timeout='60' \
-		--vault \
 		--verbose
+	
+unused:
+		--gitops \
+		--vault \
