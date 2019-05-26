@@ -1,19 +1,20 @@
 # @afirth 2019-05
 
 # USER CONFIG
-git_username = afirth
+# MUST EXPORT or set
+git-token ?= ${JX_GIT_TOKEN)
+domain ?= ${JX_DOMAIN}
 
 # SERVICE CONFIG
-#TODO
-domain = ccdev.alfirth.com
-service_name = cc
-service_level = rabbit
-project_id = camunda-cloud-240911
-zone = europe-west1-d
+service_name := cc
+service_level := rabbit
+
+git_username := $(shell git config user.name)
+project_id := $(shell gcloud config get-value project)
+zone := $(shell gcloud config get-value compute/zone)
 
 # Generated config
-cluster_name = $(service_name)-$(service_level)-$(zone)
-#domain = $(cluster_name).$(tld)
+cluster_name := $(service_name)-$(service_level)-$(zone)
 
 # Make config
 .SHELLFLAGS := -eu -o pipefail -c
@@ -21,13 +22,19 @@ MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash
 .SUFFIXES:
 
+.PHONY: validate
+validate:
+	@echo $(git-token) | grep -q '.'
+	@echo $(domain) | grep -q '.'
+
+.PHONY: delete
 delete:
 	gcloud container clusters delete $(cluster_name) --async
 
 #TODO enable long-term-storage
 #TODO fix ingress prompting
 .PHONY: create
-create:
+create: validate
 	jx create cluster gke \
 		--batch-mode \
 		--cluster-name=$(cluster_name) \
@@ -42,12 +49,16 @@ create:
 		--preemptible=true \
 		--project-id=$(project_id) \
 		--skip-login=true \
+		--skip-installation=true \
+		--skip-ingress=true \
+		--skip-cluster-role=true \
+		--skip-setup-tiller=true \
 		--verbose \
 		--zone=$(zone) \
 
 #BUG no-tiller jx/4082
 .PHONY: init
-init:
+init: validate
 	JX_NO_TILLER=true \
 	             jx init \
 		--batch-mode \
@@ -59,7 +70,7 @@ init:
 		--verbose
 
 .PHONY: install
-install:
+install: validate
 	jx install \
 		--batch-mode \
 		--buildpack='kubernetes-workloads' \
@@ -67,7 +78,7 @@ install:
 		--docker-registry="gcr.io" \
 		--domain=$(domain) \
 		--environment-git-owner=$(git_username) \
-		--git-api-token=$(GIT_TOKEN) \
+		--git-api-token=$(git-token) \
 		--git-private=true \
 		--git-username=$(git_username) \
 		--gitops \
