@@ -7,7 +7,7 @@ domain ?= $(JX_DOMAIN)
 
 # SERVICE CONFIG
 service_name := cc
-service_level := rabbit
+service_level := wombat
 
 git_username := $(shell git config user.name)
 project_id := $(shell gcloud config get-value project)
