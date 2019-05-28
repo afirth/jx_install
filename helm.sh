@@ -5,7 +5,7 @@
 # usage: ./helm.sh <valid helm args>
 # afirth 2019
 # inspired by https://rimusz.net/tillerless-helm
-set -eu -o pipefail
+set -eux -o pipefail
 
 # default to use if TILLER_NAMESPACE is not set
 # kube-system (the default) is not a great idea
@@ -28,10 +28,11 @@ fi
 set -u
 
 #inherits TILLER_NAMESPACE
+pidof tiller || \
 tiller --storage=secret --listen localhost:44134 &
 
 #wait for tiller to start
-while ! echo exit | nc localhost $tport; do sleep 1; done
+while ! pidof tiller; do sleep 1; done
 
 export HELM_HOST=localhost:$tport
 

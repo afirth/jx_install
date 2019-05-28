@@ -108,6 +108,7 @@ prometheus: helm
     --install prometheus-operator \
     --namespace prometheus-operator \
     -f ./prometheus-operator/values.yaml \
+    --debug \
     stable/prometheus-operator
 
 .PHONY: dev-tools
@@ -117,7 +118,8 @@ dev-tools: helm skaffold kustomize
 #configure helm (comes with jx)
 helm:
 	@which helm 1>/dev/null || \
-		helm init --client-only
+		(curl -L https://git.io/get_helm.sh | bash && \
+		helm init --client-only)
 
 .PHONY: kustomize
 kustomize:
