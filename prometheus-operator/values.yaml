@@ -1,0 +1,60 @@
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 4Gi
+    resources:
+     requests:
+       memory: 100Mi
+
+prometheusOperator:
+  ## Deploy CRDs used by Prometheus Operator.
+  ## disabled see https://github.com/helm/charts/issues/9941#issuecomment-447844259 -AF 2019-02
+  createCustomResource: false
+  resources:
+   limits:
+     cpu: 200m
+     memory: 200Mi
+   requests:
+     cpu: 50m
+     memory: 50Mi
+
+prometheus:
+  prometheusSpec:
+    resources:
+     requests:
+       memory: 100Mi
+       cpu: 50m
+    retention: 7d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+grafana:
+  ## this will be randomized by the grafana chart - AF
+  adminPassword: ""
+
+kubeApiServer:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+coreDns:
+  enabled: false
+
+kubeDns:
+  enabled: true
+
+kubeEtcd:
+  enabled: false

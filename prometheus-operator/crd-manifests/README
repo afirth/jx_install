@@ -1,0 +1,9 @@
+these manifests are applied using kubectl before chart installation
+see https://github.com/helm/charts/issues/9941#issuecomment-447844259
+
+```
+curl -sL https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/alertmanager.crd.yaml >  ./alertmanager.crd.yaml && \
+curl -sL https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/prometheus.crd.yaml >  ./prometheus.crd.yaml && \
+curl -sL https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/prometheusrule.crd.yaml >  ./prometheusrule.crd.yaml && \
+curl -sL https://raw.githubusercontent.com/coreos/prometheus-operator/master/example/prometheus-operator-crd/servicemonitor.crd.yaml >  ./servicemonitor.crd.yaml
+```

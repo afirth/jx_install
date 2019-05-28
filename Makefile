@@ -99,6 +99,40 @@ ingress: validate
 	JX_NO_TILLER=true \
 	jx upgrade ingress --cluster
 
-unused:
-		--gitops \
-		--vault \
+.PHONY: prometheus
+prometheus: helm
+	kubectl apply -f prometheus-operator/crd-manifests/
+	until kubectl get customresourcedefinitions servicemonitors.monitoring.coreos.com ; do date; sleep 1; echo ""; done
+	until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+	./helm.sh upgrade \
+    --install prometheus-operator \
+    --namespace prometheus-operator \
+    -f ./prometheus-operator/values.yaml \
+    stable/prometheus-operator
+
+.PHONY: dev-tools
+dev-tools: helm skaffold kustomize
+
+.PHONY: helm
+#configure helm (comes with jx)
+helm:
+	@which helm 1>/dev/null || \
+		helm init --client-only
+
+.PHONY: kustomize
+kustomize:
+	go get sigs.k8s.io/kustomize
+
+.PHONY: skaffold
+	#install skaffold
+skaffold:
+	@which skaffold 1>/dev/null || \
+	( curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+		chmod +x skaffold && \
+		sudo mv skaffold /usr/local/bin )
+
+.PHONY: auth
+auth:
+	gcloud auth configure-docker
+	gcloud auth application-default login
+
