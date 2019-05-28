@@ -98,6 +98,7 @@ install: validate
 ingress: validate
 	JX_NO_TILLER=true \
 	jx upgrade ingress --cluster
+	kubectl apply -f manifests/*issuer.yaml
 
 .PHONY: prometheus
 prometheus: helm
@@ -137,4 +138,3 @@ skaffold:
 auth:
 	gcloud auth configure-docker
 	gcloud auth application-default login
-

@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod-cluster
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app.kubernetes.io/app: prometheus-operator
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/env: cluster
+    app.kubernetes.io/managed-by: manually-afirth
+  name: grafana
+  namespace: prometheus-operator
+spec:
+  rules:
+  - host: grafana.cc.alfirth.com
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus-operator-grafana
+          servicePort: service
+        path: /
+  tls:
+  - hosts:
+    - grafana.cc.alfirth.com
+    secretName: grafana.cc.alfirth.com-tls

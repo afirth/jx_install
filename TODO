@@ -1,0 +1,3 @@
+kustomize manifests to remove cluster specific data
+ - cert emails
+ - hostnames
