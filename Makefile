@@ -9,6 +9,7 @@ domain ?= $(JX_DOMAIN)
 service_name := cc
 service_level := wombat
 
+#TODO silence (2>/dev/null?)
 git_username := $(shell git config user.name)
 project_id := $(shell gcloud config get-value project)
 zone := $(shell gcloud config get-value compute/zone)
@@ -111,6 +112,11 @@ prometheus: helm
     -f ./prometheus-operator/values.yaml \
     --debug \
     stable/prometheus-operator
+	kubectl apply -f manifests/prometheus/
+
+.PHONY: grafana-get-secret
+grafana-get-secret:
+	@kubectl get secret -n prometheus-operator prometheus-operator-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
 .PHONY: dev-tools
 dev-tools: helm skaffold kustomize
