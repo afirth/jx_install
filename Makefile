@@ -94,13 +94,15 @@ install: validate
 		--tekton \
 		--timeout='60' \
 		--verbose
-	
+
+# Install the ingress controller (and upgrade it with cert-manager)
 .PHONY: ingress
 ingress: validate
 	JX_NO_TILLER=true \
 	jx upgrade ingress --cluster
 	kubectl apply -f manifests/*issuer.yaml
 
+# Install prometheus into the cluster
 .PHONY: prometheus
 prometheus: helm
 	kubectl apply -f prometheus-operator/crd-manifests/
@@ -114,10 +116,20 @@ prometheus: helm
     stable/prometheus-operator
 	kubectl apply -f manifests/prometheus/
 
+# Install linkerd control plane
+#  get the latest stable
+#curl -sL https://run.linkerd.io/install | sh
+.PHONY: linkerd
+linkerd:
+	linkerd install --proxy-auto-inject | kubectl apply -f -
+	kubectl apply -f linkerd/
+
+# The basicauth password for grafana
 .PHONY: grafana-get-secret
 grafana-get-secret:
 	@kubectl get secret -n prometheus-operator prometheus-operator-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
+# Install development tools
 .PHONY: dev-tools
 dev-tools: helm skaffold kustomize
 
@@ -144,3 +156,4 @@ skaffold:
 auth:
 	gcloud auth configure-docker
 	gcloud auth application-default login
+
