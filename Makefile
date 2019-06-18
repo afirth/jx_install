@@ -7,7 +7,7 @@ domain ?= $(JX_DOMAIN)
 
 # SERVICE CONFIG
 service_name := cc
-service_level := wombat
+service_level := demo
 
 #TODO silence (2>/dev/null?)
 git_username := $(shell git config user.name)
@@ -35,7 +35,7 @@ delete:
 #TODO enable long-term-storage
 #TODO fix ingress prompting
 .PHONY: create
-create: validate
+create:
 	jx create cluster gke \
 		--batch-mode \
 		--cluster-name=$(cluster_name) \
