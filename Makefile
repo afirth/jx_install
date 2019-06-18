@@ -121,7 +121,7 @@ prometheus: helm
 #curl -sL https://run.linkerd.io/install | sh
 .PHONY: linkerd
 linkerd:
-	linkerd install --proxy-auto-inject | kubectl apply -f -
+	linkerd install | kubectl apply -f -
 	kubectl apply -f linkerd/
 
 # The basicauth password for grafana
